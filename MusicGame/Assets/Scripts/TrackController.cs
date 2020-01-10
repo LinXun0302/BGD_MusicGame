@@ -28,7 +28,7 @@ public class TrackController : MonoBehaviour
     private void Start()
     {
         m_NowTime = 0;
-        m_TrackSpeed = 75;
+        m_TrackSpeed = 50;
         m_TrackLengthTime = m_TrackBackGround.GetTrackLength() / m_TrackSpeed;
         m_NoteDataList = m_NoteMap.GetNoteDataList();
     }
@@ -36,6 +36,7 @@ public class TrackController : MonoBehaviour
     private void Update()
     {
         UpdateTrack();
+        m_NoteJudgment.JudgmentUpdate(m_NowTime, m_TrackList);
         m_NowTime += Time.deltaTime;
     }
 
@@ -53,22 +54,22 @@ public class TrackController : MonoBehaviour
 
     private void UpdateNote(NoteData iNoteData)
     {
-        if (iNoteData.IsActive == false)
-        {
-            return;
-        }
         TapNote aTapNote;
         if (!m_NoteManager.CheckNoteIsSpawn(iNoteData.NoteID))
         {
             aTapNote = m_NoteManager.GetNote(iNoteData);
             aTapNote.TrackSetUp(m_TrackSpeed, m_TrackLengthTime, m_TrackBackGround);
-            AddNoteToTrack(iNoteData.NoteID, aTapNote);
+            AddNoteToTrack(iNoteData.TrackIndex, aTapNote);
         }
         else
         {
             aTapNote = m_NoteManager.GetNote(iNoteData);
         }
-        aTapNote.UpdateNote(m_NowTime);
+        
+        if (aTapNote.GetIsActive())
+        {
+            aTapNote.UpdateNote(m_NowTime);
+        }
     }
 
     private void AddNoteToTrack(int iTrackIndex,TapNote iTapNote)

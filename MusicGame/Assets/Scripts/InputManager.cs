@@ -2,14 +2,51 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InputManager
+public enum TouchTypes
+{
+    TouchDown,
+    TouchHold,
+    TouchRelease,
+    Slide,
+    None
+}
+public class InputData
+{
+    public TouchTypes TouchType = TouchTypes.None;
+    public int TouchID          = -1;
+    public int TouchTrackIndex  = -1;
+}
+
+public class InputManager : Singleton<InputManager>
 {
     public List<InputData> TouchUpdate()
     {
         List<InputData> aInputDataList = new List<InputData>();
         if (Input.touchCount <= 0)
         {
-            aInputDataList = KeyBroadInputUpdate();
+            InputData aInputData = new InputData();
+            if (Input.GetMouseButtonDown(0))
+            {
+                aInputData.TouchType = TouchTypes.TouchDown;
+                aInputData.TouchTrackIndex = DetectTouchTrack(Input.mousePosition);
+                aInputData.TouchID = 0;
+            }
+            else if(Input.GetMouseButton(0))
+            {
+                aInputData.TouchType = TouchTypes.TouchHold;
+                aInputData.TouchTrackIndex = DetectTouchTrack(Input.mousePosition);
+                aInputData.TouchID = 0;
+            }
+            else if (Input.GetMouseButtonUp(0))
+            {
+                aInputData.TouchType = TouchTypes.TouchRelease;
+                aInputData.TouchTrackIndex = DetectTouchTrack(Input.mousePosition);
+                aInputData.TouchID = 0;
+            }
+            if (aInputData.TouchTrackIndex != -1)
+            {
+                aInputDataList.Add(aInputData);
+            }
         }
         else
         {
@@ -18,6 +55,7 @@ public class InputManager
             {
                 Touch aTouch = Input.touches[index];
                 aInputData.TouchID = aTouch.fingerId;
+                DetectTouchTrack(aTouch.position);
                 switch (Input.touches[index].phase)
                 {
                     case TouchPhase.Began:
@@ -38,66 +76,43 @@ public class InputManager
         }
         return aInputDataList;
     }
+
     private int DetectTouchTrack(Vector2 iTouchPosition)
     {
         //Camera need fixed
         Ray ray = Camera.main.ScreenPointToRay(iTouchPosition);
         RaycastHit hit;
+        int aTrackIndex = -1;
         if (Physics.Raycast(ray, out hit,100.0f))
         {
-
+            switch (hit.transform.name)
+            {
+                case "Track1":
+                    aTrackIndex = 0;
+                    break;
+                case "Track2":
+                    aTrackIndex = 1;
+                    break;
+                case "Track3":
+                    aTrackIndex = 2;
+                    break;
+                case "Track4":
+                    aTrackIndex = 3;
+                    break;
+                case "Track5":
+                    aTrackIndex = 4;
+                    break;
+                case "Track6":
+                    aTrackIndex = 5;
+                    break;
+                case "Track7":
+                    aTrackIndex = 6;
+                    break;
+            }
         }
-        return 0;
+        return aTrackIndex;
     }
 
-    private List<InputData> KeyBroadInputUpdate()
-    {
-        List<InputData> aInputDataList = new List<InputData>();
-        InputData aInputData;
-        if (KeyTouch(KeyCode.D) != TouchTypes.None)
-        {
-            aInputData = new InputData();
-            aInputData.TouchType = KeyTouch(KeyCode.D);
-            aInputData.TouchTrackIndex = 0;
-        }
-        if (KeyTouch(KeyCode.F) != TouchTypes.None)
-        {
-            aInputData = new InputData();
-            aInputData.TouchType = KeyTouch(KeyCode.F);
-            aInputData.TouchTrackIndex = 1;
-        }
-        if (KeyTouch(KeyCode.G) != TouchTypes.None)
-        {
-            aInputData = new InputData();
-            aInputData.TouchType = KeyTouch(KeyCode.G);
-            aInputData.TouchTrackIndex = 2;
-        }
-        if (KeyTouch(KeyCode.H) != TouchTypes.None)
-        {
-            aInputData = new InputData();
-            aInputData.TouchType = KeyTouch(KeyCode.H);
-            aInputData.TouchTrackIndex = 3;
-        }
-        if (KeyTouch(KeyCode.J) != TouchTypes.None)
-        {
-            aInputData = new InputData();
-            aInputData.TouchType = KeyTouch(KeyCode.J);
-            aInputData.TouchTrackIndex = 4;
-        }
-        if (KeyTouch(KeyCode.K) != TouchTypes.None)
-        {
-            aInputData = new InputData();
-            aInputData.TouchType = KeyTouch(KeyCode.K);
-            aInputData.TouchTrackIndex = 5;
-        }
-        if (KeyTouch(KeyCode.F) != TouchTypes.None)
-        {
-            aInputData = new InputData();
-            aInputData.TouchType = KeyTouch(KeyCode.L);
-            aInputData.TouchTrackIndex = 6;
-        }
-        return aInputDataList;
-    }
     private TouchTypes KeyTouch(KeyCode iKeyCode)
     {
         TouchTypes aTouchTypes = TouchTypes.None;

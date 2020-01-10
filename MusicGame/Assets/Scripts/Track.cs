@@ -4,15 +4,16 @@ using UnityEngine;
 
 public class Track
 {
-    private List<TapNote> m_NoteList;
     public List<TapNote> GetTrackNoteList()
     {
         return m_NoteList;
     }
+
     public void AddTapNote(TapNote iTapNote)
     {
         m_NoteList.Add(iTapNote);
     }
+
     public TapNote GetClosestNote(float iTime)
     {
         TapNote aTapNote = null;
@@ -31,6 +32,7 @@ public class Track
         }
         return aTapNote;
     }
+
     public HoldNote GetHoldNoteByTouchID(int iID)
     {
         HoldNote aHoldNote = null;
@@ -47,8 +49,12 @@ public class Track
         }
         return aHoldNote;
     } 
+
     public Track()
     {
         m_NoteList = new List<TapNote>();
     }
+
+    private List<TapNote> m_NoteList;
+
 }

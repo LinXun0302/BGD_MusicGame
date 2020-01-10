@@ -19,7 +19,6 @@ public class HoldNote : TapNote
     private int   m_HoldEndTrackIndex;
     private bool  m_IsNeedTap;
     private bool  m_IsNeedRelease;
-    private bool  m_IsNeedEndSlide;
 
     public HoldNoteState GetHoldNoteState()
     {
@@ -32,10 +31,6 @@ public class HoldNote : TapNote
     public bool GetIsNeedRelease()
     {
         return m_IsNeedRelease;
-    }
-    public bool GetIsNeedEndSlide()
-    {
-        return m_IsNeedEndSlide;
     }
     public float GetNoteEndTime()
     {
@@ -65,7 +60,6 @@ public class HoldNote : TapNote
         m_HoldEndTrackIndex = iNoteData.HoldEndTrackIndex;
         m_IsNeedTap         = iNoteData.IsNeedTap;
         m_IsNeedRelease     = iNoteData.IsNeedRelease;
-        m_IsNeedEndSlide    = iNoteData.IsNeedEndSlide;
 
         m_HoldNoteState = HoldNoteState.Tap;
 
@@ -75,8 +69,14 @@ public class HoldNote : TapNote
     public override void UpdateNote(float iTime)
     {
         base.UpdateNote(iTime);
+        if (iTime >= m_HoldEndTime && m_HoldNoteState == HoldNoteState.Hold && !m_IsNeedRelease)
+        {
+            m_IsActive = false;
+            gameObject.SetActive(false);
+        }
         UpdateLineRender(iTime);
     }
+
     public override void ChangeStateByJudge(NoteJudgment.Judgment judgment)
     {
         if (m_HoldNoteState == HoldNoteState.Tap)
@@ -97,10 +97,12 @@ public class HoldNote : TapNote
             gameObject.SetActive(false);
         }
     }
+
     public void ChangeState(HoldNoteState iHoldNoteState)
     {
         m_HoldNoteState = iHoldNoteState;
     }
+
     private void UpdateLineRender(float iTime)
     {
         Vector3 iStartPoint = this.transform.position;
@@ -112,8 +114,8 @@ public class HoldNote : TapNote
                 break;
             case HoldNoteState.Hold:
                 iStartPoint.z = m_TrackBackGround.GetJudgeLinePosition().z;
-                float XpositionPercent =  (iTime - m_NoteTime) /(m_HoldEndTime - m_NoteTime);
-                iStartPoint.x = (m_TrackBackGround.GetTrackPointPosition(m_HoldEndTrackIndex).x - m_TrackBackGround.GetTrackPointPosition(m_TrackIndex).x) * XpositionPercent;
+                float XpositionPercent = (iTime - m_NoteTime) /(m_HoldEndTime - m_NoteTime);
+                iStartPoint.x = (m_TrackBackGround.GetTrackPointPosition(m_HoldEndTrackIndex).x - m_TrackBackGround.GetTrackPointPosition(m_TrackIndex).x) * XpositionPercent + m_TrackBackGround.GetTrackPointPosition(m_TrackIndex).x;
                 break;
         }
         if (m_HoldEndTime - iTime > m_TrackLengthTime)
