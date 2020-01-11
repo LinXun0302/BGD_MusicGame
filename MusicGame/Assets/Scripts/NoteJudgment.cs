@@ -200,7 +200,6 @@ public class NoteJudgment : MonoBehaviour
         {
             return;
         }
-        print(iJudgment);
         iNote.ChangeStateByJudge(iJudgment);
     }
 }

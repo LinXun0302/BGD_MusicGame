@@ -10,6 +10,7 @@ public enum TouchTypes
     Slide,
     None
 }
+
 public class InputData
 {
     public TouchTypes TouchType = TouchTypes.None;
@@ -53,10 +54,10 @@ public class InputManager : Singleton<InputManager>
             InputData aInputData = new InputData();
             for (int index = 0; index < Input.touchCount; index++)
             {
-                Touch aTouch = Input.touches[index];
+                Touch aTouch = Input.GetTouch(index);
                 aInputData.TouchID = aTouch.fingerId;
-                DetectTouchTrack(aTouch.position);
-                switch (Input.touches[index].phase)
+                aInputData.TouchTrackIndex = DetectTouchTrack(aTouch.position);
+                switch (aTouch.phase)
                 {
                     case TouchPhase.Began:
                         aInputData.TouchType = TouchTypes.TouchDown;

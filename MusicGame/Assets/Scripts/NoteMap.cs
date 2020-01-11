@@ -15,11 +15,11 @@ public class NoteMap
     {
         m_TapNoteDataList = new List<NoteData>();
         //For Test
-        //m_TapNoteDataList.Add(CreateNoteData(NoteType.TapNote, 1, 0, 2.0f));
-        //m_TapNoteDataList.Add(CreateNoteData(NoteType.TapNote, 2, 0, 2.5f));
-        //m_TapNoteDataList.Add(CreateNoteData(NoteType.TapNote, 3, 3, 5.0f));
-        //m_TapNoteDataList.Add(CreateNoteData(NoteType.TapNote, 5, 4, 5.5f));
-        //m_TapNoteDataList.Add(CreateNoteData(NoteType.TapNote, 6, 0, 6.0f));
+        m_TapNoteDataList.Add(CreateNoteData(NoteType.TapNote, 1, 0, 2.0f));
+        m_TapNoteDataList.Add(CreateNoteData(NoteType.TapNote, 2, 0, 2.5f));
+        m_TapNoteDataList.Add(CreateNoteData(NoteType.TapNote, 3, 3, 5.0f));
+        m_TapNoteDataList.Add(CreateNoteData(NoteType.TapNote, 5, 4, 5.5f));
+        m_TapNoteDataList.Add(CreateNoteData(NoteType.TapNote, 6, 0, 6.0f));
         m_TapNoteDataList.Add(CreateHoldNoteData(NoteType.HoldNote, 8, 4, 8.30f, 6, 8.80f, true, false));
         m_TapNoteDataList.Add(CreateHoldNoteData(NoteType.HoldNote, 9, 6, 8.80f, 4, 9.30f, false, true));
         m_TapNoteDataList.Add(CreateHoldNoteData(NoteType.HoldNote, 12, 3, 9.8f, 3, 10.8f, true, true));
