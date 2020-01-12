@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HoldNote : TapNote
+public class HoldNote : Note
 {
     public enum HoldNoteState {
         Tap,
@@ -54,7 +54,11 @@ public class HoldNote : TapNote
 
     public override void Initialize(NoteData iNoteData)
     {
-        base.Initialize(iNoteData);
+        m_NoteType = iNoteData.NoteType;
+        m_NoteID = iNoteData.NoteID;
+        m_NoteTime = iNoteData.NoteTime;
+        m_TrackIndex = iNoteData.TrackIndex;
+        m_IsActive = true;
 
         m_HoldEndTime       = iNoteData.HoldEndTime;
         m_HoldEndTrackIndex = iNoteData.HoldEndTrackIndex;
@@ -63,16 +67,21 @@ public class HoldNote : TapNote
 
         m_HoldNoteState = HoldNoteState.Tap;
 
-        m_LineRender = this.gameObject.AddComponent<LineRender>();
+        if (m_LineRender == null)
+        {
+            m_LineRender = this.gameObject.AddComponent<LineRender>();
+        }
     }
 
     public override void UpdateNote(float iTime)
     {
-        base.UpdateNote(iTime);
+        Vector3 aPosition = CaculatePositionAtTrackIndexByTime(m_NoteTime, iTime, m_TrackIndex);
+        this.gameObject.transform.position = aPosition;
+
         if (iTime >= m_HoldEndTime && m_HoldNoteState == HoldNoteState.Hold && !m_IsNeedRelease)
         {
             m_IsActive = false;
-            gameObject.SetActive(false);
+            RecycleSelf();
         }
         UpdateLineRender(iTime);
     }
@@ -94,7 +103,7 @@ public class HoldNote : TapNote
         else if (m_HoldNoteState == HoldNoteState.Hold)
         {
             m_IsActive = false;
-            gameObject.SetActive(false);
+            RecycleSelf();
         }
     }
 

@@ -26,6 +26,7 @@ public class NoteJudgment : MonoBehaviour
     {
 
     }
+
     public void JudgmentUpdate(float iNowTime, Dictionary<int, Track> iTrackList)
     {
         List<InputData> aTouchDataList = m_InputManager.TouchUpdate();
@@ -49,23 +50,26 @@ public class NoteJudgment : MonoBehaviour
         {
             if (iTouchDataList[index].TouchType == TouchTypes.TouchRelease)
             {
-                TapNote aNote = null;
+                Note aNote = null;
                 Dictionary<int, Track>.KeyCollection aKeyColl = iTrackList.Keys;
                 foreach (int TrackID in aKeyColl)
                 {
                     aNote = iTrackList[TrackID].GetHoldNoteByTouchID(iTouchDataList[index].TouchID);
+                    if (aNote != null)
+                    {
+                        NoteJudge(iNowTime, aNote, iTouchDataList[index]);
+                    }
                 }
-                NoteJudge(iNowTime, aNote, iTouchDataList[index]);
             }
             else
             {
                 int aTouchTrack = iTouchDataList[index].TouchTrackIndex;
-                TapNote aTapeNote = null;
+                Note aNote = null;
                 if (iTrackList.ContainsKey(aTouchTrack))
                 {
-                    aTapeNote = iTrackList[aTouchTrack].GetClosestNote(iNowTime);
+                    aNote = iTrackList[aTouchTrack].GetClosestNote(iNowTime);
                 }
-                NoteJudge(iNowTime, aTapeNote, iTouchDataList[index]);
+                NoteJudge(iNowTime, aNote, iTouchDataList[index]);
             }
         }
     }
@@ -75,8 +79,8 @@ public class NoteJudgment : MonoBehaviour
         Dictionary<int, Track>.KeyCollection aKeyColl = iTrackList.Keys;
         foreach (int index in aKeyColl)
         {
-            List<TapNote> aNoteList = iTrackList[index].GetTrackNoteList();
-            foreach (TapNote note in aNoteList)
+            List<Note> aNoteList = iTrackList[index].GetTrackNoteList();
+            foreach (Note note in aNoteList)
             {
                 if (note.GetIsActive())
                 {
@@ -109,19 +113,19 @@ public class NoteJudgment : MonoBehaviour
         }
     }
 
-    private void NoteJudge(float iTime, TapNote iTapNote, InputData iInputData)
+    private void NoteJudge(float iTime, Note iNote, InputData iInputData)
     {
-        if (iTapNote == null)
+        if (iNote == null)
         {
             return;
         }
-        switch (iTapNote.GetNoteType())
+        switch (iNote.GetNoteType())
         {
             case NoteType.TapNote:
-                TapNoteJudge(iTime, iTapNote);
+                TapNoteJudge(iTime, iNote as TapNote);
                 break;
             case NoteType.HoldNote:
-                HoldNoteJudge(iTime, iTapNote as HoldNote, iInputData);
+                HoldNoteJudge(iTime, iNote as HoldNote, iInputData);
                 break;
         }
     }
@@ -132,15 +136,6 @@ public class NoteJudgment : MonoBehaviour
         NoteResult(iTapNote, aJudgment);
     }
 
-    private void SlideNoteJudge(float iNowTime, TapNote iTapNote, InputData iInputData)
-    {
-        if (iInputData.TouchType == TouchTypes.Slide)
-        {
-            Judgment aJudgment = TimeJudge(iNowTime, iTapNote.GetNoteTime());
-            NoteResult(iTapNote, aJudgment);
-        }
-    }
-
     private void HoldNoteJudge(float iNowTime, HoldNote iHoldNote, InputData iInputData)
     {
         switch (iInputData.TouchType) {
@@ -148,6 +143,10 @@ public class NoteJudgment : MonoBehaviour
                 if (iHoldNote.GetHoldNoteState() == HoldNote.HoldNoteState.Tap)
                 {
                     Judgment aJudgment = TimeJudge(iNowTime, iHoldNote.GetNoteTime());
+                    if (aJudgment != Judgment.None)
+                    {
+                        iHoldNote.HoldFingerID = iInputData.TouchID;
+                    }
                     NoteResult(iHoldNote, aJudgment);
                 }
                 break;
@@ -159,6 +158,7 @@ public class NoteJudgment : MonoBehaviour
                         Judgment aJudgment = TimeJudge(iNowTime, iHoldNote.GetNoteTime());
                         if (aJudgment == Judgment.Perfect)
                         {
+                            iHoldNote.HoldFingerID = iInputData.TouchID;
                             iHoldNote.ChangeStateByJudge(aJudgment);
                         }
                     }
@@ -194,7 +194,7 @@ public class NoteJudgment : MonoBehaviour
         return aJudgment;
     }
 
-    private void NoteResult(TapNote iNote, Judgment iJudgment)
+    private void NoteResult(Note iNote, Judgment iJudgment)
     {
         if (iJudgment == Judgment.None)
         {

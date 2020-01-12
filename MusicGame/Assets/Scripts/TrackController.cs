@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TrackController : MonoBehaviour
+public class TrackController : Singleton<TrackController>
 {
     [SerializeField]
     private TrackBackGround m_TrackBackGround = null;
@@ -15,11 +15,12 @@ public class TrackController : MonoBehaviour
 
     private float m_TrackSpeed;
     private float m_TrackLengthTime;
+    private float m_TrackMissTime;
     private float m_NowTime;
 
     private void Awake()
     {
-        m_NoteManager = this.gameObject.AddComponent<NoteManager>();
+        m_NoteManager = NoteManager.Instance;
         m_NoteJudgment = this.gameObject.AddComponent<NoteJudgment>();
         m_TrackList = new Dictionary<int, Track>();
         m_NoteMap = new NoteMap();
@@ -28,9 +29,10 @@ public class TrackController : MonoBehaviour
     private void Start()
     {
         m_NowTime = 0;
-        m_TrackSpeed = 50;
+        m_TrackSpeed = 60;
         m_TrackLengthTime = m_TrackBackGround.GetTrackLength() / m_TrackSpeed;
-        m_NoteDataList = m_NoteMap.GetNoteDataList();
+        m_TrackMissTime   = m_TrackBackGround.GetJudgeLinePosition().z / m_TrackSpeed;
+        m_NoteDataList    = m_NoteMap.GetNoteDataList();
     }
 
     private void Update()
@@ -45,40 +47,50 @@ public class TrackController : MonoBehaviour
         int aListLength = m_NoteDataList.Count;
         for (int index = 0; index < aListLength; index++)
         {
-            if (m_NowTime + m_TrackLengthTime >= m_NoteDataList[index].NoteTime)
+            if (m_NoteDataList[index].NoteType == NoteType.TapNote)
             {
-                UpdateNote(m_NoteDataList[index]);
+                if (m_NowTime - m_TrackMissTime <= m_NoteDataList[index].NoteTime && m_NowTime + m_TrackLengthTime >= m_NoteDataList[index].NoteTime)
+                {
+                    UpdateNote(m_NoteDataList[index]);
+                }
+            }
+            else if (m_NoteDataList[index].NoteType == NoteType.HoldNote)
+            {
+                if (m_NowTime - m_TrackMissTime <= m_NoteDataList[index].HoldEndTime && m_NowTime + m_TrackLengthTime >= m_NoteDataList[index].NoteTime)
+                {
+                    UpdateNote(m_NoteDataList[index]);
+                }
             }
         }
     }
 
     private void UpdateNote(NoteData iNoteData)
     {
-        TapNote aTapNote;
+        Note aNote;
         if (!m_NoteManager.CheckNoteIsSpawn(iNoteData.NoteID))
         {
-            aTapNote = m_NoteManager.GetNote(iNoteData);
-            aTapNote.TrackSetUp(m_TrackSpeed, m_TrackLengthTime, m_TrackBackGround);
-            AddNoteToTrack(iNoteData.TrackIndex, aTapNote);
+            aNote = m_NoteManager.GetNote(iNoteData);
+            aNote.TrackSetUp(m_TrackSpeed, m_TrackLengthTime, m_TrackBackGround);
+            AddNoteToTrack(iNoteData.TrackIndex, aNote);
         }
         else
         {
-            aTapNote = m_NoteManager.GetNote(iNoteData);
+            aNote = m_NoteManager.GetNote(iNoteData);
         }
         
-        if (aTapNote.GetIsActive())
+        if (aNote.GetIsActive())
         {
-            aTapNote.UpdateNote(m_NowTime);
+            aNote.UpdateNote(m_NowTime);
         }
     }
 
-    private void AddNoteToTrack(int iTrackIndex,TapNote iTapNote)
+    private void AddNoteToTrack(int iTrackIndex,Note iNote)
     {
         if (!m_TrackList.ContainsKey(iTrackIndex))
         {
             m_TrackList.Add(iTrackIndex,new Track());
         }
-        m_TrackList[iTrackIndex].AddTapNote(iTapNote);
+        m_TrackList[iTrackIndex].AddNote(iNote);
     }
 }
 

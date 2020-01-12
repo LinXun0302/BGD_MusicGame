@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class NoteMapData : ScriptableObject
 {
-    public List<NoteData> m_TapNoteDataList;
+    public List<NoteData> m_NoteDataList;
 }

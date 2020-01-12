@@ -2,60 +2,106 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NoteManager : MonoBehaviour
+public class NoteManager : Singleton<NoteManager>
 {
     private GameObject mTapPointPrefab = null;
-    private Dictionary<int, TapNote> m_NoteList;
+    private Dictionary<int, Note> m_UseNoteList;
+    [SerializeField]
+    private List<Note> m_UnuseNoteList;
 
-    public TapNote GetNote(NoteData iNoteData)
+    public Note GetNote(NoteData iNoteData)
     {
-        TapNote aTapNote;
+        Note aNote;
         if (CheckNoteIsSpawn(iNoteData.NoteID))
         {
-            aTapNote = GetNoteInDictionary(iNoteData.NoteID);
+            aNote = GetNoteInDictionary(iNoteData.NoteID);
         }
         else
         {
             switch (iNoteData.NoteType)
             {
                 case NoteType.HoldNote:
-                    aTapNote = CreateTapNoteAndInitialize<HoldNote>(iNoteData);
+                    aNote = GetNote<HoldNote>();
+                    aNote.Initialize(iNoteData);
+                    m_UseNoteList.Add(iNoteData.NoteID, aNote);
                     break;
                 default:
-                    aTapNote = CreateTapNoteAndInitialize<TapNote>(iNoteData);
+                    aNote = GetNote<TapNote>();
+                    aNote.Initialize(iNoteData);
+                    m_UseNoteList.Add(iNoteData.NoteID, aNote);
                     break;
             }
         }
-        return aTapNote;
+        return aNote;
     }
 
     public bool CheckNoteIsSpawn(int iNoteID)
     {
         bool aIsSpawn = false;
-        aIsSpawn = m_NoteList.ContainsKey(iNoteID);
+        aIsSpawn = m_UseNoteList.ContainsKey(iNoteID);
         return aIsSpawn;
     }
 
-    private void Awake()
+    public void RecycleNote(Note iNote)
     {
-        mTapPointPrefab = Resources.Load<GameObject>("Prefabs/TapPoint");
-        m_NoteList = new Dictionary<int, TapNote>();
+        m_UnuseNoteList.Add(iNote);
+        iNote.gameObject.SetActive(false);
     }
 
-    private T CreateTapNoteAndInitialize<T>(NoteData iNoteData) where T : TapNote
+    public override void Awake()
+    {
+        base.Awake();
+        mTapPointPrefab = Resources.Load<GameObject>("Prefabs/TapPoint");
+        m_UseNoteList = new Dictionary<int, Note>();
+        m_UnuseNoteList = new List<Note>();
+        CreateNoteToUnusePool<TapNote>(0);
+        CreateNoteToUnusePool<HoldNote>(0);
+    }
+
+    private void CreateNoteToUnusePool<T>(int iCount) where T : Note
+    {
+        for (int aIndex = 0; aIndex < iCount; aIndex++)
+        {
+            T aNote = CreateNote<T>();
+            m_UnuseNoteList.Add(aNote);
+        }
+    }
+
+    private T GetNote<T>() where T : Note
+    {
+        T aNote = null;
+        for (int aIndex = 0; aIndex < m_UnuseNoteList.Count; aIndex++)
+        {
+            aNote = m_UnuseNoteList[aIndex] as T;
+            if (aNote != null)
+            {
+                m_UnuseNoteList.Remove(aNote);
+                break;
+            }
+        }
+        if (aNote == null)
+        {
+            aNote = CreateNote<T>();
+        }
+        aNote.gameObject.SetActive(true);
+        return aNote;
+    }
+
+    private T CreateNote<T>() where T : Note
     {
         T aNote = null;
         GameObject aNoteObject = Instantiate(mTapPointPrefab);
         aNote = aNoteObject.AddComponent<T>();
-        aNote.Initialize(iNoteData);
-        m_NoteList.Add(iNoteData.NoteID, aNote);
+        aNote.gameObject.name = typeof(T).ToString();
+        aNote.transform.SetParent(this.transform);
+        aNote.gameObject.SetActive(false);
         return aNote;
     }
 
-    private TapNote GetNoteInDictionary(int iNoteID)
+    private Note GetNoteInDictionary(int iNoteID)
     {
-        TapNote aTapNote = null;
-        aTapNote = m_NoteList[iNoteID];
-        return aTapNote;
+        Note aNote = null;
+        aNote = m_UseNoteList[iNoteID];
+        return aNote;
     }
 }
