@@ -20,36 +20,38 @@ public class InputData
 
 public class InputManager : Singleton<InputManager>
 {
+//-----------------------------------------------
+//Public
+//-----------------------------------------------
     public List<InputData> TouchUpdate()
     {
         List<InputData> aInputDataList = new List<InputData>();
-        if (Input.touchCount <= 0)
+#if UNITY_EDITOR
+        InputData aInputData = new InputData();
+        if (Input.GetMouseButtonDown(0))
         {
-            InputData aInputData = new InputData();
-            if (Input.GetMouseButtonDown(0))
-            {
-                aInputData.TouchType = TouchTypes.TouchDown;
-                aInputData.TouchTrackIndex = DetectTouchTrack(Input.mousePosition);
-                aInputData.TouchID = 0;
-            }
-            else if(Input.GetMouseButton(0))
-            {
-                aInputData.TouchType = TouchTypes.TouchHold;
-                aInputData.TouchTrackIndex = DetectTouchTrack(Input.mousePosition);
-                aInputData.TouchID = 0;
-            }
-            else if (Input.GetMouseButtonUp(0))
-            {
-                aInputData.TouchType = TouchTypes.TouchRelease;
-                aInputData.TouchTrackIndex = DetectTouchTrack(Input.mousePosition);
-                aInputData.TouchID = 0;
-            }
-            if (aInputData.TouchTrackIndex != -1)
-            {
-                aInputDataList.Add(aInputData);
-            }
+            aInputData.TouchType = TouchTypes.TouchDown;
+            aInputData.TouchTrackIndex = DetectTouchTrack(Input.mousePosition);
+            aInputData.TouchID = 0;
         }
-        else
+        else if(Input.GetMouseButton(0))
+        {
+            aInputData.TouchType = TouchTypes.TouchHold;
+            aInputData.TouchTrackIndex = DetectTouchTrack(Input.mousePosition);
+            aInputData.TouchID = 0;
+        }
+        else if (Input.GetMouseButtonUp(0))
+        {
+            aInputData.TouchType = TouchTypes.TouchRelease;
+            aInputData.TouchTrackIndex = DetectTouchTrack(Input.mousePosition);
+            aInputData.TouchID = 0;
+        }
+        if (aInputData.TouchTrackIndex != -1)
+        {
+            aInputDataList.Add(aInputData);
+        }
+#elif UNITY_ANDROID || UNITY_IOS
+        if (Input.touchCount > 0)
         {
             InputData aInputData = new InputData();
             for (int index = 0; index < Input.touchCount; index++)
@@ -75,12 +77,15 @@ public class InputManager : Singleton<InputManager>
             }
             aInputDataList.Add(aInputData);
         }
+#endif
         return aInputDataList;
     }
 
+//-----------------------------------------------
+//private
+//-----------------------------------------------
     private int DetectTouchTrack(Vector2 iTouchPosition)
     {
-        //Camera need fixed
         Ray ray = Camera.main.ScreenPointToRay(iTouchPosition);
         RaycastHit hit;
         int aTrackIndex = -1;
@@ -112,22 +117,5 @@ public class InputManager : Singleton<InputManager>
             }
         }
         return aTrackIndex;
-    }
-
-    private TouchTypes KeyTouch(KeyCode iKeyCode)
-    {
-        TouchTypes aTouchTypes = TouchTypes.None;
-        if (Input.GetKeyDown(iKeyCode)) {
-            aTouchTypes = TouchTypes.TouchDown;
-        }
-        else if(Input.GetKey(iKeyCode))
-        {
-            aTouchTypes = TouchTypes.TouchHold;
-        }
-        else if (Input.GetKeyUp(iKeyCode))
-        {
-            aTouchTypes = TouchTypes.TouchRelease;
-        }
-        return aTouchTypes;
     }
 }

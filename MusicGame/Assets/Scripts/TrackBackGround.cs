@@ -4,13 +4,9 @@ using UnityEngine;
 
 public class TrackBackGround : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject m_JudgeLine = null;
-    [SerializeField]
-    private List<GameObject> m_TrackPointList;
-
-    private const float TRACK_LENGTH = 150.0f;
-
+//-----------------------------------------------
+//Public
+//-----------------------------------------------
     public float GetTrackLength()
     {
         return TRACK_LENGTH;
@@ -39,4 +35,18 @@ public class TrackBackGround : MonoBehaviour
         }
         return aPosition;
     }
+
+//-----------------------------------------------
+//Variables
+//-----------------------------------------------
+    [SerializeField]
+    private GameObject m_JudgeLine = null;
+    [SerializeField]
+    private List<GameObject> m_TrackPointList = new List<GameObject>();
+
+//-----------------------------------------------
+//Const
+//-----------------------------------------------
+    private const float TRACK_LENGTH = 150.0f;
+
 }

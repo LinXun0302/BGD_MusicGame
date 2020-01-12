@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class NoteMap
 {
-    private List<NoteData> m_NoteDataList;
-
+//-----------------------------------------------
+//Public
+//-----------------------------------------------
     public List<NoteData> GetNoteDataList()
     {
         return m_NoteDataList;
@@ -25,6 +26,9 @@ public class NoteMap
         m_NoteDataList.Add(CreateHoldNoteData(NoteType.HoldNote, 12, 3, 9.8f, 3, 10.8f, true, true));
     }
 
+//-----------------------------------------------
+//private
+//-----------------------------------------------
     private NoteData CreateHoldNoteData(NoteType iNoteType,int iNoteID, int iTrackIndex,float iNoteTime,int iEndTrack, float iHoldEndTime,bool iNeedTap, bool iNeedRelease)
     {
         NoteData aNoteData = CreateNoteData(iNoteType, iNoteID, iTrackIndex, iNoteTime);
@@ -36,6 +40,7 @@ public class NoteMap
 
         return aNoteData;
     }
+
     private NoteData CreateNoteData(NoteType iNoteType, int iNoteID, int iTrackIndex, float iNoteTime)
     {
         NoteData aNoteData = new NoteData();
@@ -46,4 +51,9 @@ public class NoteMap
 
         return aNoteData;
     }
+
+//-----------------------------------------------
+//Variables
+//-----------------------------------------------
+    private List<NoteData> m_NoteDataList;
 }

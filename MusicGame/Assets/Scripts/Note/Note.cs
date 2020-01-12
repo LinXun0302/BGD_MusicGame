@@ -4,16 +4,10 @@ using UnityEngine;
 
 public abstract class Note : MonoBehaviour
 {
-    protected NoteType m_NoteType;
-    protected int      m_NoteID;
-    protected int      m_TrackIndex;
-    protected float    m_NoteTime;
-    protected float    m_TrackSpeed;
-    protected float    m_TrackLengthTime;
-    protected bool     m_IsActive;
 
-    protected TrackBackGround m_TrackBackGround;
-
+//-----------------------------------------------
+//Get;Set;
+//-----------------------------------------------
     public NoteType GetNoteType()
     {
         return m_NoteType;
@@ -35,10 +29,17 @@ public abstract class Note : MonoBehaviour
         return m_IsActive;
     }
 
+//-----------------------------------------------
+//Abstract
+//-----------------------------------------------
+
     abstract public void Initialize(NoteData iNoteData);
     abstract public void ChangeStateByJudge(NoteJudgment.Judgment judgment);
     abstract public void UpdateNote(float iTime);
 
+//-----------------------------------------------
+//Public
+//-----------------------------------------------
     public void TrackSetUp(float iTrackSpeed, float iTrackLengthTime, TrackBackGround iTrackBackGround)
     {
         m_TrackSpeed = iTrackSpeed;
@@ -50,7 +51,9 @@ public abstract class Note : MonoBehaviour
     {
         NoteManager.Instance.RecycleNote(this);
     }
-
+//-----------------------------------------------
+//Private
+//-----------------------------------------------
     protected Vector3 CaculatePositionAtTrackIndexByTime(float iNoteTime, float iNowTime, int aTrackIndex)
     {
         Vector3 aPosition = new Vector3();
@@ -60,4 +63,16 @@ public abstract class Note : MonoBehaviour
         aPosition = new Vector3(aNotePositionX, 0.01f, aNotePositionZ);
         return aPosition;
     }
+
+//-----------------------------------------------
+//Variable
+//-----------------------------------------------
+    protected NoteType m_NoteType;
+    protected int      m_NoteID;
+    protected int      m_TrackIndex;
+    protected float    m_NoteTime;
+    protected float    m_TrackSpeed;
+    protected float    m_TrackLengthTime;
+    protected bool     m_IsActive;
+    protected TrackBackGround m_TrackBackGround;
 }

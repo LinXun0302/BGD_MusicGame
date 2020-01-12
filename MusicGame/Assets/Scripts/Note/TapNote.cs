@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class TapNote : Note
 {
+//-----------------------------------------------
+//Public
+//-----------------------------------------------
     public override void Initialize(NoteData iNoteData)
     {
         m_NoteType          = iNoteData.NoteType;

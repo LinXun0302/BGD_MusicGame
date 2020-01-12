@@ -4,11 +4,9 @@ using UnityEngine;
 
 public class NoteManager : Singleton<NoteManager>
 {
-    private GameObject mTapPointPrefab = null;
-    private Dictionary<int, Note> m_UseNoteList;
-    [SerializeField]
-    private List<Note> m_UnuseNoteList;
-
+//-----------------------------------------------
+//Public
+//-----------------------------------------------
     public Note GetNote(NoteData iNoteData)
     {
         Note aNote;
@@ -57,7 +55,10 @@ public class NoteManager : Singleton<NoteManager>
         CreateNoteToUnusePool<TapNote>(0);
         CreateNoteToUnusePool<HoldNote>(0);
     }
-
+//-----------------------------------------------
+//private
+//-----------------------------------------------
+#region
     private void CreateNoteToUnusePool<T>(int iCount) where T : Note
     {
         for (int aIndex = 0; aIndex < iCount; aIndex++)
@@ -104,4 +105,11 @@ public class NoteManager : Singleton<NoteManager>
         aNote = m_UseNoteList[iNoteID];
         return aNote;
     }
+    #endregion
+//-----------------------------------------------
+//Variables
+//-----------------------------------------------
+    private GameObject mTapPointPrefab = null;
+    private Dictionary<int, Note> m_UseNoteList;
+    private List<Note> m_UnuseNoteList;
 }

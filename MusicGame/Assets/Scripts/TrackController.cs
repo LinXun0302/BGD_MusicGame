@@ -4,28 +4,20 @@ using UnityEngine;
 
 public class TrackController : Singleton<TrackController>
 {
-    [SerializeField]
-    private TrackBackGround m_TrackBackGround = null;
-
-    private NoteManager m_NoteManager;
-    private NoteJudgment m_NoteJudgment;
-    private NoteMap m_NoteMap;
-    private List<NoteData> m_NoteDataList;
-    private Dictionary<int, Track> m_TrackList;
-
-    private float m_TrackSpeed;
-    private float m_TrackLengthTime;
-    private float m_TrackMissTime;
-    private float m_NowTime;
-
-    private void Awake()
+//-----------------------------------------------
+//Public
+//-----------------------------------------------
+    public override void Awake()
     {
+        base.Awake();
         m_NoteManager = NoteManager.Instance;
         m_NoteJudgment = this.gameObject.AddComponent<NoteJudgment>();
         m_TrackList = new Dictionary<int, Track>();
         m_NoteMap = new NoteMap();
     }
-
+//-----------------------------------------------
+//private
+//-----------------------------------------------
     private void Start()
     {
         m_NowTime = 0;
@@ -92,5 +84,21 @@ public class TrackController : Singleton<TrackController>
         }
         m_TrackList[iTrackIndex].AddNote(iNote);
     }
+//-----------------------------------------------
+//Variables
+//-----------------------------------------------
+    [SerializeField]
+    private TrackBackGround m_TrackBackGround = null;
+
+    private NoteManager            m_NoteManager;
+    private NoteJudgment           m_NoteJudgment;
+    private NoteMap                m_NoteMap;
+    private List<NoteData>         m_NoteDataList;
+    private Dictionary<int, Track> m_TrackList;
+
+    private float m_TrackSpeed;
+    private float m_TrackLengthTime;
+    private float m_TrackMissTime;
+    private float m_NowTime;
 }
 

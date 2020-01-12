@@ -4,22 +4,19 @@ using UnityEngine;
 
 public class HoldNote : Note
 {
+//-----------------------------------------------
+//Enum
+//-----------------------------------------------
     public enum HoldNoteState {
         Tap,
         Hold,
         Relase,
         None
     }
-
-    private LineRender m_LineRender;
-    private HoldNoteState m_HoldNoteState;
-    private int m_HoldFingerID;
-    //HoldNoteData
-    private float m_HoldEndTime;
-    private int   m_HoldEndTrackIndex;
-    private bool  m_IsNeedTap;
-    private bool  m_IsNeedRelease;
-
+//-----------------------------------------------
+//Get;Set;
+//-----------------------------------------------
+#region
     public HoldNoteState GetHoldNoteState()
     {
         return m_HoldNoteState;
@@ -40,18 +37,12 @@ public class HoldNote : Note
     {
         return m_HoldEndTrackIndex;
     }
-    public int HoldFingerID
-    {
-        get
-        {
-            return m_HoldFingerID;
-        }
-        set
-        {
-            m_HoldFingerID = value;
-        }
-    }
+    public int HoldFingerID { get; set; }
+    #endregion
 
+//-----------------------------------------------
+//Public
+//-----------------------------------------------
     public override void Initialize(NoteData iNoteData)
     {
         m_NoteType = iNoteData.NoteType;
@@ -112,6 +103,9 @@ public class HoldNote : Note
         m_HoldNoteState = iHoldNoteState;
     }
 
+//-----------------------------------------------
+//Private
+//-----------------------------------------------
     private void UpdateLineRender(float iTime)
     {
         Vector3 iStartPoint = this.transform.position;
@@ -137,4 +131,14 @@ public class HoldNote : Note
         }
         m_LineRender.ChangeLinePoint(iStartPoint, iEndPoint);
     }
+
+//-----------------------------------------------
+//Variables
+//-----------------------------------------------
+    private LineRender m_LineRender;
+    private HoldNoteState m_HoldNoteState;
+    private float m_HoldEndTime;
+    private int m_HoldEndTrackIndex;
+    private bool m_IsNeedTap;
+    private bool m_IsNeedRelease;
 }

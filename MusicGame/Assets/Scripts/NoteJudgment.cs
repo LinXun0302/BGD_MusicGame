@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class NoteJudgment : MonoBehaviour
 {
+//-----------------------------------------------
+//Enum
+//-----------------------------------------------
     public enum Judgment
     {
         Perfect,
@@ -13,26 +16,20 @@ public class NoteJudgment : MonoBehaviour
         Miss,
         None
     }
-
-    private List<float> m_JudgeTimeList;
-    private InputManager m_InputManager;
-
-    private const float PERFECT_TIME_RANGE = 0.033f;
-    private const float GREAT_TIME_RANGE   = 0.065f;
-    private const float GOOD_TIME_RANGE    = 0.083f;
-    private const float BAD_TIME_RANGE     = 0.1f;
-
-    public void Initializer()
-    {
-
-    }
-
+//-----------------------------------------------
+//Public
+//-----------------------------------------------
     public void JudgmentUpdate(float iNowTime, Dictionary<int, Track> iTrackList)
     {
         List<InputData> aTouchDataList = m_InputManager.TouchUpdate();
         TouchJudge(aTouchDataList,iNowTime, iTrackList);
         MissJudge(iNowTime, iTrackList);
     }
+
+//-----------------------------------------------
+//private
+//-----------------------------------------------
+#region
 
     private void Awake()
     {
@@ -202,4 +199,19 @@ public class NoteJudgment : MonoBehaviour
         }
         iNote.ChangeStateByJudge(iJudgment);
     }
+#endregion
+
+    //-----------------------------------------------
+    //Variables
+    //-----------------------------------------------
+    private List<float> m_JudgeTimeList;
+    private InputManager m_InputManager;
+
+    //-----------------------------------------------
+    //Const
+    //-----------------------------------------------
+    private const float PERFECT_TIME_RANGE = 0.033f;
+    private const float GREAT_TIME_RANGE   = 0.065f;
+    private const float GOOD_TIME_RANGE    = 0.083f;
+    private const float BAD_TIME_RANGE     = 0.1f;
 }

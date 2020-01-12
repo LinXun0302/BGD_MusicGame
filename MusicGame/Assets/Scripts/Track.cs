@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Track
 {
+//-----------------------------------------------
+//Public
+//-----------------------------------------------
     public List<Note> GetTrackNoteList()
     {
         return m_NoteList;
@@ -55,6 +58,9 @@ public class Track
         m_NoteList = new List<Note>();
     }
 
+//-----------------------------------------------
+//Variables
+//-----------------------------------------------
     private List<Note> m_NoteList;
 
 }
