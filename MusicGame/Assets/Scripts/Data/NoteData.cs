@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Flags]
 public enum NoteType
 {
     TapNote,
     HoldNote,
-    NONE,
 }
 
+[System.Serializable]
 public class NoteData
 {
     public NoteType NoteType    = NoteType.TapNote;

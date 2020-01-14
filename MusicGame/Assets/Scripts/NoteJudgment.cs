@@ -197,6 +197,7 @@ public class NoteJudgment : MonoBehaviour
         {
             return;
         }
+        GameManager.Instance.NoteJudge(iJudgment);
         iNote.ChangeStateByJudge(iJudgment);
     }
 #endregion

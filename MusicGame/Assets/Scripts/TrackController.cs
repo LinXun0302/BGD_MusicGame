@@ -10,29 +10,31 @@ public class TrackController : Singleton<TrackController>
     public override void Awake()
     {
         base.Awake();
-        m_NoteManager = NoteManager.Instance;
-        m_NoteJudgment = this.gameObject.AddComponent<NoteJudgment>();
-        m_TrackList = new Dictionary<int, Track>();
-        m_NoteMap = new NoteMap();
+        m_NoteManager    = NoteManager.Instance;
+        m_NoteJudgment   = this.gameObject.AddComponent<NoteJudgment>();
+        m_TrackList      = new Dictionary<int, Track>();
+        m_NoteMapManager = new NoteMapManager();
     }
-//-----------------------------------------------
-//private
-//-----------------------------------------------
-    private void Start()
+
+    public void StartPlaySong(int SongIndex)
     {
         m_NowTime = 0;
         m_TrackSpeed = 60;
         m_TrackLengthTime = m_TrackBackGround.GetTrackLength() / m_TrackSpeed;
-        m_TrackMissTime   = m_TrackBackGround.GetJudgeLinePosition().z / m_TrackSpeed;
-        m_NoteDataList    = m_NoteMap.GetNoteDataList();
+        m_TrackMissTime = m_TrackBackGround.GetJudgeLinePosition().z / m_TrackSpeed;
+        m_NoteDataList = m_NoteMapManager.GetNoteDataList(SongIndex);
     }
 
-    private void Update()
+    public void TrackControllerUpdate()
     {
         UpdateTrack();
         m_NoteJudgment.JudgmentUpdate(m_NowTime, m_TrackList);
         m_NowTime += Time.deltaTime;
     }
+
+    //-----------------------------------------------
+    //private
+    //-----------------------------------------------
 
     private void UpdateTrack()
     {
@@ -92,7 +94,7 @@ public class TrackController : Singleton<TrackController>
 
     private NoteManager            m_NoteManager;
     private NoteJudgment           m_NoteJudgment;
-    private NoteMap                m_NoteMap;
+    private NoteMapManager         m_NoteMapManager;
     private List<NoteData>         m_NoteDataList;
     private Dictionary<int, Track> m_TrackList;
 
